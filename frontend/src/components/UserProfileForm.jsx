@@ -36,10 +36,15 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
     }
 
     if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^\+?[0-9\s-]{7,15}$/.test(formData.phone.replace(/\s+/g, ''))) {
-      newErrors.phone = 'Please enter a valid phone number (7-15 digits)';
-    }
+       newErrors.phone = 'Phone number is required';
+   } else if (
+        !/^(\+91|91)?[6-9]\d{9}$/.test(
+    formData.phone.replace(/\s+/g, '')
+  )
+  ) {
+  newErrors.phone =
+    'Please enter a valid Indian mobile number';
+ }
 
     if (!formData.location.trim()) newErrors.location = 'Location is required';
     if (!photo) newErrors.photo = 'Profile photo is required';
@@ -139,7 +144,7 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
       
       onProfileCreated(newProfile);
     } catch (error) {
-      console.error('Submit error:', error);
+      console.error('Submit error: errr', error);
       showToast(error.message || 'Error connecting to the backend API.', 'error');
     } finally {
       setLoading(false);
