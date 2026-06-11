@@ -169,7 +169,7 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              placeholder="John Doe"
+              placeholder="Uday Kiran"
               className="form-input"
               disabled={loading}
             />
@@ -188,7 +188,7 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder="johndoe@example.com"
+              placeholder="name@example.com"
               className="form-input"
               disabled={loading}
             />
@@ -207,7 +207,7 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              placeholder="+1 (555) 000-0000"
+              placeholder="+91 999999999"
               className="form-input"
               disabled={loading}
             />
@@ -226,7 +226,7 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
               name="location"
               value={formData.location}
               onChange={handleInputChange}
-              placeholder="San Francisco, CA"
+              placeholder="Location"
               className="form-input"
               disabled={loading}
             />
