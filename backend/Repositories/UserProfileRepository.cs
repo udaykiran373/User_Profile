@@ -27,6 +27,16 @@ namespace UserProfileApi.Repositories
             return await _userProfilesCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
         }
 
+        public async Task<UserProfile?> GetByEmailAsync(string email)
+        {
+            return await _userProfilesCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
+        }
+
+        public async Task<UserProfile?> GetByPhoneAsync(string phone)
+        {
+            return await _userProfilesCollection.Find(x => x.Phone == phone).FirstOrDefaultAsync();
+        }
+
         public async Task<UserProfile> CreateAsync(UserProfile userProfile)
         {
             await _userProfilesCollection.InsertOneAsync(userProfile);

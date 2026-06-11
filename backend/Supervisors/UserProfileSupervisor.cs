@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UserProfileApi.Models;
 using UserProfileApi.Repositories;
@@ -32,8 +33,25 @@ namespace UserProfileApi.Supervisors
             return await _userProfileRepository.GetByIdAsync(id);
         }
 
+        public async Task<bool> EmailExistsAsync(string email)
+        {
+            var normalizedEmail = email.Trim().ToLowerInvariant();
+            return await _userProfileRepository.GetByEmailAsync(normalizedEmail) != null;
+        }
+
+        public async Task<bool> PhoneExistsAsync(string phone)
+        {
+            var normalizedPhone = NormalizePhone(phone);
+            return await _userProfileRepository.GetByPhoneAsync(normalizedPhone) != null;
+        }
+
         public async Task<UserProfile> CreateProfileAsync(UserProfile profile, IFormFile profilePhoto)
         {
+            profile.Name = profile.Name.Trim();
+            profile.Email = profile.Email.Trim().ToLowerInvariant();
+            profile.Phone = NormalizePhone(profile.Phone);
+            profile.Location = profile.Location.Trim();
+
             var webRootPath = _webHostEnvironment.WebRootPath;
             if (string.IsNullOrEmpty(webRootPath))
             {
@@ -60,6 +78,11 @@ namespace UserProfileApi.Supervisors
 
             var savedProfile = await _userProfileRepository.CreateAsync(profile);
             return savedProfile;
+        }
+
+        private static string NormalizePhone(string phone)
+        {
+            return Regex.Replace(phone.Trim(), @"\s+", string.Empty);
         }
     }
 }

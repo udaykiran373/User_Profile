@@ -9,6 +9,8 @@ namespace UserProfileApi.Supervisors
     {
         Task<IEnumerable<UserProfile>> GetAllProfilesAsync();
         Task<UserProfile?> GetProfileByIdAsync(string id);
+        Task<bool> EmailExistsAsync(string email);
+        Task<bool> PhoneExistsAsync(string phone);
         Task<UserProfile> CreateProfileAsync(UserProfile profile, IFormFile profilePhoto);
     }
 }

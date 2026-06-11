@@ -43,19 +43,40 @@ namespace UserProfileApi.Controllers
         [Consumes("multipart/form-data")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserProfile))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<UserProfile>> CreateProfile([FromForm] UserProfile profile, [FromForm] IFormFile profilePhoto)
         {
-            if (profilePhoto == null || profilePhoto.Length == 0)
+            if (!ModelState.IsValid)
             {
-                return BadRequest(new { message = "Profile photo is required and cannot be empty." });
+                return ValidationProblem(ModelState);
             }
 
-            // Optional: Validate file extension/size
+            if (profilePhoto == null || profilePhoto.Length == 0)
+            {
+                ModelState.AddModelError("ProfilePhoto", "Profile photo is required and cannot be empty.");
+                return ValidationProblem(ModelState);
+            }
+
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
             var extension = System.IO.Path.GetExtension(profilePhoto.FileName).ToLowerInvariant();
             if (System.Array.IndexOf(allowedExtensions, extension) < 0)
             {
                 return BadRequest(new { message = "Invalid file type. Only JPG, JPEG, PNG, WEBP, and GIF are allowed." });
+            }
+
+            if (profilePhoto.Length > 5 * 1024 * 1024)
+            {
+                return BadRequest(new { message = "Profile photo size must be less than 5MB." });
+            }
+
+            if (await _userProfileSupervisor.EmailExistsAsync(profile.Email))
+            {
+                return Conflict(new { message = "Email is already in use." });
+            }
+
+            if (await _userProfileSupervisor.PhoneExistsAsync(profile.Phone))
+            {
+                return Conflict(new { message = "Phone number is already in use." });
             }
 
             var createdProfile = await _userProfileSupervisor.CreateProfileAsync(profile, profilePhoto);
