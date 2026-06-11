@@ -19,17 +19,17 @@ namespace UserProfileApi.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserProfileResponseDto>))]
-        public async Task<ActionResult<IEnumerable<UserProfileResponseDto>>> GetAllProfiles()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserProfile>))]
+        public async Task<ActionResult<IEnumerable<UserProfile>>> GetAllProfiles()
         {
             var profiles = await _userProfileSupervisor.GetAllProfilesAsync();
             return Ok(profiles);
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserProfileResponseDto))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserProfile))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UserProfileResponseDto>> GetProfileById(string id)
+        public async Task<ActionResult<UserProfile>> GetProfileById(string id)
         {
             var profile = await _userProfileSupervisor.GetProfileByIdAsync(id);
             if (profile == null)
@@ -41,25 +41,25 @@ namespace UserProfileApi.Controllers
 
         [HttpPost]
         [Consumes("multipart/form-data")]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserProfileResponseDto))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserProfile))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<UserProfileResponseDto>> CreateProfile([FromForm] UserProfileCreateDto createDto)
+        public async Task<ActionResult<UserProfile>> CreateProfile([FromForm] UserProfile profile, [FromForm] IFormFile profilePhoto)
         {
-            if (createDto.ProfilePhoto == null || createDto.ProfilePhoto.Length == 0)
+            if (profilePhoto == null || profilePhoto.Length == 0)
             {
                 return BadRequest(new { message = "Profile photo is required and cannot be empty." });
             }
 
             // Optional: Validate file extension/size
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
-            var extension = System.IO.Path.GetExtension(createDto.ProfilePhoto.FileName).ToLowerInvariant();
+            var extension = System.IO.Path.GetExtension(profilePhoto.FileName).ToLowerInvariant();
             if (System.Array.IndexOf(allowedExtensions, extension) < 0)
             {
                 return BadRequest(new { message = "Invalid file type. Only JPG, JPEG, PNG, WEBP, and GIF are allowed." });
             }
 
-            var profile = await _userProfileSupervisor.CreateProfileAsync(createDto);
-            return CreatedAtAction(nameof(GetProfileById), new { id = profile.Id }, profile);
+            var createdProfile = await _userProfileSupervisor.CreateProfileAsync(profile, profilePhoto);
+            return CreatedAtAction(nameof(GetProfileById), new { id = createdProfile.Id }, createdProfile);
         }
     }
 }

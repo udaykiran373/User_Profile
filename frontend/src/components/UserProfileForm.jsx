@@ -1,6 +1,4 @@
-
 import React, { useState, useRef } from 'react';
-import { User, Mail, Phone, MapPin, UploadCloud, X } from 'lucide-react';
 
 const API_URL = 'http://localhost:5166/api/user-profiles';
 
@@ -22,7 +20,6 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear validation error when typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
@@ -40,17 +37,9 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
 
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone number is required';
-    }  else {
-  // Removes spaces, hyphens, and parentheses for a clean check
-  const cleanedPhone = formData.phone.replace(/[\s\-()]+/g, '');
-  
-  // Validates standard 10 digits starting with 6-9, with optional +91 or 0 prefix
-  const indianPhoneRegex = /^(?:\+91|0)?[6-9]\d{9}$/;
-  
-  if (!indianPhoneRegex.test(cleanedPhone)) {
-    newErrors.phone = 'Please enter a valid 10-digit Indian phone number';
-  }
-}
+    } else if (!/^\+?[0-9\s-]{7,15}$/.test(formData.phone.replace(/\s+/g, ''))) {
+      newErrors.phone = 'Please enter a valid phone number (7-15 digits)';
+    }
 
     if (!formData.location.trim()) newErrors.location = 'Location is required';
     if (!photo) newErrors.photo = 'Profile photo is required';
@@ -62,7 +51,6 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
   const handleFileChange = (file) => {
     if (!file) return;
 
-    // Validate type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
       setErrors((prev) => ({
@@ -72,7 +60,6 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
       return;
     }
 
-    // Validate size (limit to 5MB)
     if (file.size > 5 * 1024 * 1024) {
       setErrors((prev) => ({
         ...prev,
@@ -84,7 +71,6 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
     setPhoto(file);
     setErrors((prev) => ({ ...prev, photo: '' }));
 
-    // Generate Preview URL
     const reader = new FileReader();
     reader.onloadend = () => {
       setPhotoPreview(reader.result);
@@ -147,7 +133,6 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
       const newProfile = await response.json();
       showToast('Profile created successfully!', 'success');
       
-      // Reset Form
       setFormData({ name: '', email: '', phone: '', location: '' });
       setPhoto(null);
       setPhotoPreview('');
@@ -164,21 +149,22 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
   return (
     <div className="glass-panel">
       <h2 className="panel-title">
-        <User size={20} className="card-info-icon" /> Create Profile
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="card-info-icon"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> 
+        Create Profile
       </h2>
       <form onSubmit={handleSubmit} noValidate>
         {/* Name */}
         <div className="form-group">
           <label className="form-label" htmlFor="name">Full Name</label>
           <div className="input-container">
-            <User size={16} className="input-icon" />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="input-icon"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <input
               type="text"
               id="name"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              placeholder="Name"
+              placeholder="John Doe"
               className="form-input"
               disabled={loading}
             />
@@ -190,14 +176,14 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
         <div className="form-group">
           <label className="form-label" htmlFor="email">Email Address</label>
           <div className="input-container">
-            <Mail size={16} className="input-icon" />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="input-icon"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
             <input
               type="email"
               id="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder="name@example.com"
+              placeholder="johndoe@example.com"
               className="form-input"
               disabled={loading}
             />
@@ -209,14 +195,14 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
         <div className="form-group">
           <label className="form-label" htmlFor="phone">Phone Number</label>
           <div className="input-container">
-            <Phone size={16} className="input-icon" />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="input-icon"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             <input
               type="tel"
               id="phone"
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              placeholder="+91 9999999999"
+              placeholder="+1 (555) 000-0000"
               className="form-input"
               disabled={loading}
             />
@@ -228,14 +214,14 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
         <div className="form-group">
           <label className="form-label" htmlFor="location">Location</label>
           <div className="input-container">
-            <MapPin size={16} className="input-icon" />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="input-icon"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
             <input
               type="text"
               id="location"
               name="location"
               value={formData.location}
               onChange={handleInputChange}
-              placeholder="Place"
+              placeholder="San Francisco, CA"
               className="form-input"
               disabled={loading}
             />
@@ -285,7 +271,7 @@ export default function UserProfileForm({ onProfileCreated, showToast }) {
               </div>
             ) : (
               <div className="dropzone-content">
-                <UploadCloud className="dropzone-icon" />
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="dropzone-icon"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
                 <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                   Drag & Drop profile image
                 </p>

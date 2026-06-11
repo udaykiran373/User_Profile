@@ -38,3 +38,4 @@ C:\Users\91798\Desktop\projects\tescra\userProfile\backend\obj\Debug\net10.0\bac
 C:\Users\91798\Desktop\projects\tescra\userProfile\backend\obj\Debug\net10.0\backend.genruntimeconfig.cache
 C:\Users\91798\Desktop\projects\tescra\userProfile\backend\obj\Debug\net10.0\ref\backend.dll
 C:\Users\91798\Desktop\projects\tescra\userProfile\backend\bin\Debug\net10.0\backend.staticwebassets.runtime.json
+C:\Users\91798\Desktop\projects\tescra\userProfile\backend\obj\Debug\net10.0\backend.sourcelink.json
